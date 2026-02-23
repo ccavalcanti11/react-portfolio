@@ -1,10 +1,43 @@
-# Portfolio Project Ideas
+# Portfolio Projects
 
-This document outlines three project ideas to be built in this portfolio, each designed to showcase the skills and engineering practices listed in the target job description. No implementation has started yet — this is the planning and scoping document.
+This is a **single Next.js application** that hosts all three portfolio projects under one roof. All projects share the same codebase, design system, Apollo client, and deployment — just like a real-world product that grows one feature at a time.
+
+A portfolio hub at `/` acts as the landing page: three project cards, each linking into its own route. The recruiter lands on one URL, sees everything immediately, and dives into whichever project interests them.
+
+---
+
+## Architecture
+
+### Why one app instead of three
+
+- **One URL to share.** A single link showcases everything. Three separate links risk the reviewer only visiting one.
+- **Demonstrates real-world structure.** Knowing how to organise multiple feature areas inside one scalable codebase is itself a skill worth showing.
+- **Shared infrastructure.** The Apollo client, design tokens, reusable components (buttons, cards, skeletons), and Tailwind config are written once and used everywhere.
+- **One deployment.** One Vercel/Netlify project, one `.env`, one CI pipeline.
+
+### Folder structure
+
+```
+src/app/
+  page.tsx                   ← Portfolio hub — cards linking to all 3 projects
+  github/
+    [username]/page.tsx       ← Project 1: GitHub Profile Explorer
+  blog/
+    page.tsx                  ← Project 2: Dev Blog
+    [slug]/page.tsx
+  board/
+    page.tsx                  ← Project 3: Real-Time Kanban Board
+```
+
+### Note on Project 3
+
+Project 3 requires a GraphQL **subscriptions** server (WebSocket transport). That backend will be hosted separately (e.g. a small Node + `graphql-ws` server). The frontend still lives in this app — it simply connects to an external endpoint. This is standard practice in production and is a realistic architecture to demonstrate.
 
 ---
 
 ## Project 1 — GitHub Profile Explorer
+
+**Status:** ✅ Complete — live at `/github/:username`
 
 ### What it is
 A search tool that lets users look up any GitHub username and browse their public repositories, languages, stars, and activity. Data is fetched through a **GraphQL API** (GitHub's public GraphQL endpoint) using **Apollo Client**.
@@ -34,6 +67,8 @@ Demonstrate real-world GraphQL consumption — writing queries, handling loading
 ---
 
 ## Project 2 — Dev Blog with CMS-backed Content
+
+**Status:** 🔲 Not started
 
 ### What it is
 A personal developer blog where posts are managed in a headless CMS (e.g., **Hygraph** or **Contentful**, both of which expose a GraphQL API) and rendered as statically generated pages via Next.js.
@@ -65,6 +100,8 @@ Showcase **static site generation (SSG)** and **incremental static regeneration 
 ---
 
 ## Project 3 — Real-Time Task Board (Kanban)
+
+**Status:** 🔲 Not started
 
 ### What it is
 A drag-and-drop Kanban board (think a simplified Trello) where tasks can be created, moved between columns, and updated. It uses a **GraphQL API with subscriptions** to reflect changes in real time across browser tabs.
