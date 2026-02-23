@@ -3,8 +3,12 @@ import "./globals.css";
 import ApolloWrapper from "@/components/ApolloWrapper";
 
 export const metadata: Metadata = {
-  title: "React Portfolio",
-  description: "A portfolio built with Next.js, React, GraphQL and Apollo Client",
+  title: {
+    default: "GitHub Profile Explorer",
+    template: "%s — GitHub Profile Explorer",
+  },
+  description:
+    "Look up any GitHub user — browse their public repositories, languages, stars, and activity.",
 };
 
 export default function RootLayout({
