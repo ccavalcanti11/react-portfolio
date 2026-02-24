@@ -74,7 +74,7 @@ This project demonstrates exactly that workflow in a realistic context. A fronte
 
 ## Project 2 — Dev Blog with CMS-backed Content
 
-**Status:** 🔲 Not started
+**Status:** ✅ Complete — live at `/blog`
 
 ### What it is
 A personal developer blog where posts are managed in a headless CMS (e.g., **Hygraph** or **Contentful**, both of which expose a GraphQL API) and rendered as statically generated pages via Next.js.
