@@ -1,107 +1,169 @@
-# React Portfolio
+# Frontend Portfolio
 
-A generic boilerplate portfolio project built with **Next.js**, **React**, **GraphQL**, and **Apollo Client**, with unit testing powered by **Jest** and **React Testing Library**.
+A **single Next.js application** that hosts three production-quality frontend projects under one roof — sharing a design system, Apollo Client, and deployment. GraphQL throughout. TypeScript end-to-end.
+
+---
+
+## Projects
+
+### ✅ 01 — GitHub Profile Explorer &nbsp;`/github/:username`
+
+Look up any GitHub user and browse their public repositories, languages, stars, and activity.
+
+- GitHub GraphQL API via Apollo Client
+- Debounced search input (custom `useDebounce` hook)
+- Cursor-based load-more pagination with `InMemoryCache` merge policies
+- Skeleton loading states and graceful error handling
+- Fully responsive layout
+
+### ✅ 02 — Dev Blog &nbsp;`/blog`
+
+A developer blog backed by a headless CMS (Hygraph) with statically generated pages and on-demand revalidation.
+
+- Next.js SSG + ISR (`revalidate = 3600`) via `fetch` + `next.revalidate`
+- `generateStaticParams` for all post slugs at build time
+- Client-side tag filter (zero extra network requests)
+- Per-page SEO metadata with the `next/metadata` API
+- Dark / light theme toggle with no flash of unstyled content (blocking inline script)
+
+### ✅ 03 — Real-Time Kanban Board &nbsp;`/board`
+
+A drag-and-drop task board with live updates that arrive via a GraphQL subscription simulation.
+
+- Drag & drop with [@dnd-kit](https://dndkit.com/) — `PointerSensor` (8 px activation distance) + `KeyboardSensor` for full accessibility
+- Optimistic UI — cards move instantly before any server round-trip
+- `useReducer` state machine with 8 action types; columns derived via memoised selector
+- `ON_TASK_CHANGED` GraphQL subscription document wired to a local `setInterval` emitter (drop-in replacement for a real `graphql-ws` backend)
+- Create / edit / delete tasks via a native `<dialog>` modal with focus management
+- Priority + label filter bar (`aria-pressed` pills)
+- Live indicator that pulses on each subscription event
+
+---
 
 ## Tech Stack
 
 | Technology | Purpose |
 |---|---|
-| [Next.js](https://nextjs.org/) (App Router) | Full-stack React framework |
+| [Next.js 16](https://nextjs.org/) (App Router) | Framework — SSG, ISR, server & client components |
 | [React 19](https://react.dev/) | UI library |
-| [Apollo Client v4](https://www.apollographql.com/docs/react/) | GraphQL state management |
-| [GraphQL](https://graphql.org/) | Query language for APIs |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS framework |
-| [TypeScript](https://www.typescriptlang.org/) | Type safety |
-| [Jest](https://jestjs.io/) | Test runner |
-| [React Testing Library](https://testing-library.com/react) | Component testing |
+| [Apollo Client v4](https://www.apollographql.com/docs/react/) | GraphQL client — queries, mutations, subscriptions |
+| [GraphQL](https://graphql.org/) | Query language used across all three projects |
+| [@dnd-kit](https://dndkit.com/) | Accessible drag-and-drop (Project 3) |
+| [graphql-ws](https://github.com/enisdenjo/graphql-ws) | WebSocket subscription transport (Project 3) |
+| [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first design system |
+| [TypeScript 5](https://www.typescriptlang.org/) | Strict type safety end-to-end |
+| [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/react) | Unit testing |
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- npm
+- pnpm (or npm / yarn)
 
 ### Install dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
-### Configure the GraphQL endpoint
+### Configure environment variables
 
-Copy `.env.example` to `.env.local` and set your GraphQL API URL:
-
-```bash
-cp .env.example .env.local
-```
+Create `.env.local` and add the relevant tokens:
 
 ```env
-NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://your-api.example.com/graphql
+# Project 1 — GitHub GraphQL API
+NEXT_PUBLIC_GITHUB_TOKEN=your_github_personal_access_token
+
+# Project 2 — Hygraph CMS (optional — falls back to mock data)
+HYGRAPH_ENDPOINT=https://your-region.hygraph.com/v2/your-project/master
+HYGRAPH_TOKEN=your_hygraph_token
+
+# Project 3 — Kanban board backend (optional — falls back to simulation)
+NEXT_PUBLIC_BOARD_HTTP_URL=https://your-board-server.example.com/graphql
+NEXT_PUBLIC_BOARD_WS_URL=wss://your-board-server.example.com/graphql
 ```
+
+> **Without any env vars the app runs in demo mode**: mock blog posts and a subscription simulation are used so everything is visible without external services.
 
 ### Run the development server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
 
 ## Available Scripts
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run unit tests |
-| `npm run test:watch` | Run tests in watch mode |
+| `pnpm dev` | Start development server |
+| `pnpm build` | Build for production |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+| `pnpm test` | Run unit tests |
+| `pnpm test:watch` | Run tests in watch mode |
+
+---
 
 ## Project Structure
 
 ```
 src/
-├── app/               # Next.js App Router pages and layouts
-│   ├── layout.tsx     # Root layout (wraps the app with ApolloWrapper)
-│   └── page.tsx       # Home page
+├── app/
+│   ├── page.tsx                  # Portfolio hub — cards linking to all 3 projects
+│   ├── layout.tsx                # Root layout — ApolloWrapper, theme script
+│   ├── github/[username]/        # Project 1: GitHub Profile Explorer
+│   ├── blog/                     # Project 2: Dev Blog (SSG + ISR)
+│   │   ├── page.tsx
+│   │   └── [slug]/page.tsx
+│   └── board/                    # Project 3: Real-Time Kanban Board
+│       ├── layout.tsx
+│       └── page.tsx
 ├── components/
-│   └── ApolloWrapper.tsx  # Client-side Apollo Provider wrapper
+│   ├── ApolloWrapper.tsx          # Apollo Provider (client component)
+│   ├── ThemeToggle.tsx            # Dark / light toggle
+│   ├── github/                   # Project 1 components
+│   ├── blog/                     # Project 2 components
+│   └── board/                    # Project 3 components
+│       ├── BoardColumn.tsx        # Droppable column with SortableContext
+│       ├── TaskCard.tsx           # Sortable card with drag handle + menu
+│       ├── TaskDialog.tsx         # Create / edit modal (<dialog>)
+│       ├── FilterBar.tsx          # Priority + label filter pills
+│       └── LiveIndicator.tsx      # Subscription pulse indicator
+├── hooks/
+│   ├── useDebounce.ts             # Generic debounce hook (Project 1)
+│   ├── useGitHubProfile.ts        # GitHub data hook (Project 1)
+│   └── useBoard.ts                # Kanban state machine (Project 3)
 ├── lib/
-│   └── apollo-client.ts   # Apollo Client factory
-└── __tests__/         # Unit tests
+│   ├── apollo-client.ts           # HTTP + WS split-link Apollo factory
+│   ├── github/                   # Project 1 — types & GraphQL queries
+│   └── blog/                     # Project 2 — types, queries, CMS client
+│       └── board/                # Project 3 — types, queries, mock data
+└── __tests__/                    # Unit tests (Jest + RTL)
     ├── apollo-client.test.ts
     ├── ApolloWrapper.test.tsx
-    └── page.test.tsx
+    ├── page.test.tsx
+    ├── RepositoryCard.test.tsx
+    ├── useDebounce.test.ts
+    └── board/
+        ├── useBoard.test.ts       # Pure reducer — 8 action types
+        └── TaskCard.test.tsx      # Render + interaction tests
 ```
 
-## Using GraphQL with Apollo Client
+---
 
-The `ApolloWrapper` component in `src/components/ApolloWrapper.tsx` wraps the entire application with an `ApolloProvider`, making the Apollo Client available to all client components via React context.
+## Architecture highlights
 
-**Example usage in a client component:**
+**One app, three feature areas.** All projects share the same Tailwind design tokens, Apollo Client, and root layout — the same way a real product grows one feature at a time inside a single codebase.
 
-```tsx
-"use client";
+**Server vs. client components.** The blog uses server components for static rendering; the GitHub explorer and Kanban board use client components where interactivity and hooks are required. Both patterns live side-by-side in the same App Router app.
 
-import { useQuery, gql } from "@apollo/client/react";
+**GraphQL subscription architecture.** The Apollo Client is configured with a `split` link: subscription operations route to a `GraphQLWsLink` (WebSocket); queries and mutations route to `HttpLink`. When `NEXT_PUBLIC_BOARD_WS_URL` is not set the board falls back to a local simulation — no backend required to evaluate the project.
 
-const GET_EXAMPLE = gql`
-  query GetExample {
-    example {
-      id
-      name
-    }
-  }
-`;
-
-export default function ExampleComponent() {
-  const { loading, error, data } = useQuery(GET_EXAMPLE);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
-}
-```
+**Pure reducer state.** The Kanban board's `boardReducer` is a plain function — no React, no side-effects. Every state transition is tested directly by passing `(state, action)` pairs, giving complete branch coverage without mounting any components.
