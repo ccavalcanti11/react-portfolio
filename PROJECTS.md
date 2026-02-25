@@ -113,7 +113,7 @@ The pattern this project demonstrates — pull content from a CMS at build time,
 
 ## Project 3 — Real-Time Task Board (Kanban)
 
-**Status:** 🔲 Not started
+**Status:** ✅ Complete — live at `/board`
 
 ### What it is
 A drag-and-drop Kanban board (think a simplified Trello) where tasks can be created, moved between columns, and updated. It uses a **GraphQL API with subscriptions** to reflect changes in real time across browser tabs.
@@ -165,4 +165,4 @@ The projects are listed in recommended build order — each one builds on the Gr
 
 ## Next step
 
-Once this document is approved, development will begin with **Project 1 — GitHub Profile Explorer**.
+All three projects are complete. The portfolio is live and ready to share.

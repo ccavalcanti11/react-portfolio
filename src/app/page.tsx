@@ -35,13 +35,13 @@ const PROJECTS = [
   },
   {
     number: "03",
-    status: "soon" as const,
+    status: "live" as const,
     title: "Real-Time Kanban Board",
     description:
       "A drag-and-drop task board with live updates across browser tabs via GraphQL subscriptions, optimistic UI, and complex state management.",
-    href: "#",
-    cta: "Coming soon",
-    tech: ["GraphQL Subscriptions", "Apollo", "React DnD", "WebSockets"],
+    href: "/board",
+    cta: "Open board →",
+    tech: ["GraphQL Subscriptions", "dnd-kit", "useReducer", "WebSockets"],
     pills: [],
   },
 ] as const;
