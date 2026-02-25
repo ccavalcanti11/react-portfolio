@@ -64,11 +64,17 @@ Demonstrate real-world GraphQL consumption — writing queries, handling loading
 | Performance | Apollo cache preventing redundant network calls |
 | Clean code | Reusable components, custom hooks (`useProfileQuery`) |
 
+### Business value
+
+Most product companies consume at least one external GraphQL API — payment providers, CMSs, internal microservices, or third-party data sources. The core challenge is always the same: write a typed query, handle the network lifecycle cleanly (loading, error, empty, success), cache responses so the UI feels instant, and paginate without re-fetching already-loaded data.
+
+This project demonstrates exactly that workflow in a realistic context. A frontend engineer who can do this with the GitHub API on day one can do it against any company API with minimal ramp-up time.
+
 ---
 
 ## Project 2 — Dev Blog with CMS-backed Content
 
-**Status:** 🔲 Not started
+**Status:** ✅ Complete — live at `/blog`
 
 ### What it is
 A personal developer blog where posts are managed in a headless CMS (e.g., **Hygraph** or **Contentful**, both of which expose a GraphQL API) and rendered as statically generated pages via Next.js.
@@ -96,6 +102,12 @@ Showcase **static site generation (SSG)** and **incremental static regeneration 
 | Performance | Static generation + ISR = near-zero server response time |
 | Clean, maintainable code | Separation of data-fetching logic from UI components |
 | Scalable architecture | Feature-based folder structure, reusable content components |
+
+### Business value
+
+Marketing pages, documentation sites, product landing pages, and editorial content are overwhelmingly built with SSG and ISR today — because a static HTML file served from a CDN edge node loads in milliseconds anywhere in the world, costs almost nothing to host, and scores near-perfect on Core Web Vitals.
+
+The pattern this project demonstrates — pull content from a CMS at build time, ship pre-rendered HTML, revalidate on demand when editors publish — is the default architecture for any content-heavy production site. A frontend engineer who understands ISR revalidation, `generateStaticParams`, and `next/metadata` can own the performance and SEO story of a company's public-facing pages from day one.
 
 ---
 
@@ -132,6 +144,12 @@ Demonstrate advanced GraphQL usage (mutations, subscriptions), optimistic UI upd
 | Cross-browser debugging | Drag-and-drop behaviour tested across Chrome, Firefox, Safari |
 | Engineering practices | Unit tests with Jest + React Testing Library |
 | Scalable architecture | Domain-driven folder structure ready to add features |
+
+### Business value
+
+Collaborative, real-time UIs are one of the hardest frontend problems to get right: a card that moves on screen before the server confirms, a list that stays consistent across tabs, a drag-and-drop interaction that never loses state. Getting these wrong produces the most visible, user-facing bugs — and fixing them under pressure is expensive.
+
+This project shows the three techniques that solve it in production: **optimistic UI** (instant feedback without waiting for the network), **GraphQL subscriptions** (push-based updates that replace polling), and **memoisation** (preventing the entire board from re-rendering when one card changes). A frontend engineer who has built this from scratch can reason about real-time state, spot race conditions, and make informed trade-offs about where to put optimistic logic — skills directly applicable to any product with collaborative or live-updating features.
 
 ---
 

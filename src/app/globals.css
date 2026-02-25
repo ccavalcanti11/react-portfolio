@@ -1,26 +1,152 @@
 @import "tailwindcss";
 
+/*
+  Switch Tailwind's dark mode from the default `prefers-color-scheme` media
+  query to a class-based strategy. Adding/removing the `dark` class on <html>
+  (done by ThemeToggle + the blocking init script in layout.tsx) gives full
+  programmatic control while still falling back to the OS preference for
+  first-time visitors.
+*/
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------------------------------------------------------------------------
+   Blog prose — typographic styles for CMS-rendered HTML.
+   Applied via the `.blog-prose` wrapper in PostContent.tsx.
+   Written manually to show HTML5/CSS3 skill without @tailwindcss/typography.
+   --------------------------------------------------------------------------- */
+
+.blog-prose {
+  color: #3f3f46; /* zinc-700 */
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 65ch;
+}
+
+.dark .blog-prose {
+  color: #d4d4d8; /* zinc-300 */
+}
+
+.blog-prose h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #18181b;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.dark .blog-prose h2 {
+  color: #f4f4f5;
+}
+
+.blog-prose h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #18181b;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.dark .blog-prose h3 {
+  color: #f4f4f5;
+}
+
+.blog-prose p {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+}
+
+.blog-prose a {
+  color: #0284c7;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+}
+
+.blog-prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+.dark .blog-prose a {
+  color: #38bdf8;
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.blog-prose ul {
+  list-style-type: disc;
+}
+
+.blog-prose ol {
+  list-style-type: decimal;
+}
+
+.blog-prose li {
+  margin-bottom: 0.4rem;
+}
+
+.blog-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+  background: #f4f4f5;
+  color: #be185d;
+  border-radius: 0.25rem;
+  padding: 0.1em 0.35em;
+}
+
+.dark .blog-prose code {
+  background: #27272a;
+  color: #f9a8d4;
+}
+
+.blog-prose pre {
+  background: #18181b;
+  color: #e4e4e7;
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.blog-prose pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+  border-radius: 0;
+}
+
+.dark .blog-prose pre {
+  background: #09090b;
+  border: 1px solid #27272a;
+}
+
+.blog-prose blockquote {
+  border-left: 3px solid #e4e4e7;
+  padding-left: 1rem;
+  color: #71717a;
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+.dark .blog-prose blockquote {
+  border-left-color: #3f3f46;
+  color: #a1a1aa;
 }
