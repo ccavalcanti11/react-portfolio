@@ -44,6 +44,17 @@ const PROJECTS = [
     tech: ["GraphQL Subscriptions", "dnd-kit", "useReducer", "WebSockets"],
     pills: [],
   },
+  {
+    number: "04",
+    status: "live" as const,
+    title: "Trade Intelligence Knowledge Graph",
+    description:
+      "An interactive force-directed knowledge graph modelling global commodity trade flows — countries, commodities, and companies connected by real 2024 data. Click any node to \"walk the data\", discover connections, and find shortest paths between any two entities. Designed around the knowledge-graph platform concept.",
+    href: "/graph",
+    cta: "Explore the graph →",
+    tech: ["D3.js v7", "Force Simulation", "BFS Path Finder", "TypeScript"],
+    pills: [],
+  },
 ] as const;
 
 const STATUS_BADGE = {

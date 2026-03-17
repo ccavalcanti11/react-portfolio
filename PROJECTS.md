@@ -1,8 +1,8 @@
 # Portfolio Projects
 
-This is a **single Next.js application** that hosts all three portfolio projects under one roof. All projects share the same codebase, design system, Apollo client, and deployment — just like a real-world product that grows one feature at a time.
+This is a **single Next.js application** that hosts all four portfolio projects under one roof. All projects share the same codebase, design system, Apollo client, and deployment — just like a real-world product that grows one feature at a time.
 
-A portfolio hub at `/` acts as the landing page: three project cards, each linking into its own route. The recruiter lands on one URL, sees everything immediately, and dives into whichever project interests them.
+A portfolio hub at `/` acts as the landing page: four project cards, each linking into its own route. The recruiter lands on one URL, sees everything immediately, and dives into whichever project interests them.
 
 ---
 
@@ -19,7 +19,7 @@ A portfolio hub at `/` acts as the landing page: three project cards, each linki
 
 ```
 src/app/
-  page.tsx                   ← Portfolio hub — cards linking to all 3 projects
+  page.tsx                   ← Portfolio hub — cards linking to all 4 projects
   github/
     [username]/page.tsx       ← Project 1: GitHub Profile Explorer
   blog/
@@ -27,6 +27,8 @@ src/app/
     [slug]/page.tsx
   board/
     page.tsx                  ← Project 3: Real-Time Kanban Board
+  graph/
+    page.tsx                  ← Project 4: Trade Intelligence Knowledge Graph
 ```
 
 ### Note on Project 3
@@ -153,16 +155,87 @@ This project shows the three techniques that solve it in production: **optimisti
 
 ---
 
+## Project 4 — Trade Intelligence Knowledge Graph
+
+**Status:** ✅ Complete — live at `/graph`
+
+### What it is
+An interactive, force-directed knowledge graph explorer that models global commodity trade flows — 12 countries, 4 commodities (LNG, Crude Oil, Iron Ore, LPG), and 8 major energy companies (Saudi Aramco, QatarEnergy, Shell, BP, TotalEnergies, Equinor, Chevron, CNOOC) connected by 58 typed relationships grounded in realistic 2024 market data.
+
+The core interaction is **"walking the data"**: click any node to see its connections and domain-specific properties, follow an edge to navigate to a neighbour, and build up a breadcrumb trail of the exploration path. A BFS path finder lets users discover the shortest relationship chain between any two entities in the graph.
+
+### Objective
+Demonstrate advanced data visualisation and the ability to build intuitive, high-performance UIs for complex, interconnected data structures — directly mirroring the "knowledge graph platform" concept where users collaboratively explore relationships to discover high-value insights.
+
+### Scope
+- Force-directed graph simulation powered by **D3 v7** (`d3-force`, `d3-zoom`, `d3-drag`)
+- 24 typed nodes across three entity types: `country`, `commodity`, `company`
+- 58 typed edges across five relationship types: `TRADE_FLOW`, `EXPORTS`, `IMPORTS`, `PRODUCES`, `OPERATES_IN`
+- Click a node to select it — highlights all direct neighbours, dims the rest, and appends to the walk trail
+- **"Walk the data"** breadcrumb — a clickable trail of every node visited; click any prior step to jump back
+- **BFS shortest-path finder** — type any node name in the panel to highlight the shortest relationship chain across the graph
+- Node type filter, edge type filter, and full-text search to focus on specific subgraphs
+- Animated arrowheads indicating edge directionality; stroke width encodes trade volume weight
+- Entity panel showing domain-specific properties per node type (GDP, market cap, spot prices, global demand figures)
+- Drag to pin/unpin individual nodes; scroll/pinch to zoom; double-click background to reset view
+- Stats overlay showing visible node/edge counts and active path length
+- Fully responsive — entity panel on the side on desktop, slides up from bottom on mobile
+
+### Data model
+
+The graph follows the **property graph model** used by databases such as Neo4j and AWS Neptune:
+
+```
+(Node { id, type, label, properties })
+-[Edge { id, type, source, target, weight, properties }]->
+(Node)
+```
+
+Edge properties are typed per relationship:
+- `TradeEdgeProperties` — `{ volumeLabel, yearEstimate, trend, notes? }`
+- `OperationalEdgeProperties` — `{ since?, notes? }`
+
+The BFS path finder mirrors the graph traversal query `shortestPath((a)-[*]-(b))` in Cypher (Neo4j) or `g.V(a).repeat(both().simplePath()).until(hasId(b)).path().limit(1)` in Gremlin (AWS Neptune).
+
+### Skills highlighted
+| Skill | How it shows up |
+|---|---|
+| React / Next.js | Client components, custom hooks, layout system |
+| D3.js v7 | Force simulation, zoom, drag, tick-based SVG rendering |
+| TypeScript | Discriminated union types per node/edge, fully typed D3 generics |
+| Data visualisation | Force layout, directional arrowheads, opacity/glow highlighting |
+| Graph algorithms | BFS shortest path, adjacency map construction, filter engine |
+| Advanced state management | `useGraph` hook managing selection, walk trail, path, and filters |
+| Performance | D3 simulation runs off React's render cycle; second effect updates only visual styles without restarting physics |
+| Domain knowledge | Realistic 2024 commodity trade data: LNG flows, crude diversion routes, company-country-commodity relationships |
+| Clean, maintainable code | Separation of simulation logic (D3 effect), visual update logic (second effect), and state (hook) |
+| Scalable architecture | Graph lib layer (`types`, `mock-data`, `graph-utils`) fully decoupled from components |
+
+### Business value
+
+The hardest part of building a data product is not fetching and storing the data — it is making complex, interconnected data **navigable** for a non-technical user. A knowledge graph is the most demanding version of this problem: every node is both data and navigation, every edge is both a relationship and a path, and the user needs to feel oriented even when the dataset is large.
+
+This project demonstrates the three capabilities that make a knowledge graph UI genuinely useful:
+
+1. **Spatial layout that encodes meaning.** The D3 force simulation places highly-connected nodes (e.g. China, Qatar, LNG) near the centre of the graph naturally — the structure itself becomes a visual signal about which entities are most important.
+2. **Progressive disclosure through walking.** Rather than presenting all 58 relationships at once, the entity panel reveals only the edges of the selected node. The walk trail provides context of how the user arrived there, so they never feel lost.
+3. **Algorithmic insight on demand.** The BFS path finder answers the kind of question that drives real commodity intelligence: *"What is the shortest chain of relationships between Saudi Aramco and Germany?"* — surfacing non-obvious connections without requiring the user to manually trace edges.
+
+A frontend engineer who can build this from scratch — managing a physics simulation off the React lifecycle, writing a BFS traversal that highlights results in the UI, and modelling a typed graph schema that mirrors Neo4j's property graph — is directly equipped to work on data-product UIs, knowledge platforms, and trade intelligence applications.
+
+---
+
 ## Development order
 
-The projects are listed in recommended build order — each one builds on the GraphQL and Next.js concepts introduced by the previous:
+The projects are listed in recommended build order — each one builds on the concepts introduced by the previous:
 
 1. **GitHub Profile Explorer** — establishes GraphQL querying and Apollo Client setup
 2. **Dev Blog** — introduces SSG/ISR and server-side GraphQL patterns
 3. **Kanban Board** — adds mutations, subscriptions, and advanced state management
+4. **Trade Intelligence Knowledge Graph** — introduces D3 force simulation, graph algorithms, and domain-specific data visualisation
 
 ---
 
 ## Next step
 
-All three projects are complete. The portfolio is live and ready to share.
+All four projects are complete. The portfolio is live and ready to share.
