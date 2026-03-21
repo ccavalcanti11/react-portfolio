@@ -1,6 +1,6 @@
 # Frontend Portfolio
 
-A **single Next.js application** that hosts four production-quality frontend projects under one roof — sharing a design system, Apollo Client, and deployment. GraphQL throughout. TypeScript end-to-end.
+A **single Next.js application** that hosts five production-quality frontend projects under one roof — sharing a design system, Apollo Client, and deployment. GraphQL throughout. TypeScript end-to-end.
 
 ---
 
@@ -50,6 +50,20 @@ An interactive, force-directed knowledge graph explorer modelling global commodi
 - Fully responsive — entity panel on the side on desktop, slides up from bottom on mobile
 - D3 simulation runs off React's render cycle; a dedicated second effect updates only visual properties (opacity, stroke) without restarting physics
 
+### ✅ 05 — Client Showcase &nbsp;`/showcase`
+
+A multi-dimensional case-study portfolio backed by Contentful CMS — demonstrating the full front-end delivery workflow an experience-design consultancy uses in production.
+
+- **Contentful Content Delivery API** (headless CMS) with a `fetch`-based ISR client; falls back to rich mock data when `CONTENTFUL_SPACE_ID` is unset
+- Next.js **SSG + ISR** (`revalidate = 3600`) for the list page; `generateStaticParams` pre-renders every detail page at build time
+- `generateMetadata` produces per-study SEO titles, descriptions, and Open Graph tags from CMS content
+- **JSON-LD structured data** (`schema.org/Article`) injected server-side for rich SERP eligibility
+- **Multi-dimensional filter state** via `useReducer` with a discriminated-union action type and compile-time exhaustiveness check — industry × service × full-text search
+- **Debounced search** (300 ms via `useDebounce`) so filtering only runs after the user stops typing
+- `useMemo` for derived `visibleStudies` — recomputes only when filter state or the dataset changes
+- Streaming **loading skeletons** (`loading.tsx` at both the list and detail route segments)
+- 5 fully-authored case studies covering retail, healthcare, finance, education, and automotive
+
 ---
 
 ## Tech Stack
@@ -63,6 +77,7 @@ An interactive, force-directed knowledge graph explorer modelling global commodi
 | [D3.js v7](https://d3js.org/) | Force simulation, zoom, drag — knowledge graph (Project 4) |
 | [@dnd-kit](https://dndkit.com/) | Accessible drag-and-drop (Project 3) |
 | [graphql-ws](https://github.com/enisdenjo/graphql-ws) | WebSocket subscription transport (Project 3) |
+| [Contentful](https://www.contentful.com/) | Headless CMS — case-study content (Project 5) |
 | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first design system |
 | [TypeScript 5](https://www.typescriptlang.org/) | Strict type safety end-to-end |
 | [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/react) | Unit testing |
@@ -97,6 +112,10 @@ HYGRAPH_TOKEN=your_hygraph_token
 # Project 3 — Kanban board backend (optional — falls back to simulation)
 NEXT_PUBLIC_BOARD_HTTP_URL=https://your-board-server.example.com/graphql
 NEXT_PUBLIC_BOARD_WS_URL=wss://your-board-server.example.com/graphql
+
+# Project 5 — Contentful CMS (optional — falls back to mock data)
+CONTENTFUL_SPACE_ID=your_contentful_space_id
+CONTENTFUL_DELIVERY_TOKEN=your_contentful_delivery_api_token
 ```
 
 > **Without any env vars the app runs in demo mode**: mock blog posts, a subscription simulation, and a fully self-contained graph dataset are used so everything is visible without external services.
@@ -138,9 +157,16 @@ src/
 │   ├── board/                    # Project 3: Real-Time Kanban Board
 │   │   ├── layout.tsx
 │   │   └── page.tsx
-│   └── graph/                    # Project 4: Trade Intelligence Knowledge Graph
+│   ├── graph/                    # Project 4: Trade Intelligence Knowledge Graph
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   └── showcase/                 # Project 5: Client Showcase
 │       ├── layout.tsx
-│       └── page.tsx
+│       ├── loading.tsx            # Streaming skeleton — list page
+│       ├── page.tsx               # SSG list + ISR (server component)
+│       └── [slug]/
+│           ├── loading.tsx        # Streaming skeleton — detail page
+│           └── page.tsx           # generateStaticParams + generateMetadata + JSON-LD
 ├── components/
 │   ├── ApolloWrapper.tsx          # Apollo Provider (client component)
 │   ├── ThemeToggle.tsx            # Dark / light toggle
@@ -152,35 +178,54 @@ src/
 │   │   ├── TaskDialog.tsx         # Create / edit modal (<dialog>)
 │   │   ├── FilterBar.tsx          # Priority + label filter pills
 │   │   └── LiveIndicator.tsx      # Subscription pulse indicator
-│   └── graph/                    # Project 4 components
-│       ├── GraphCanvas.tsx        # D3 force simulation — full SVG rendering
-│       ├── EntityPanel.tsx        # Node details + path finder UI
-│       ├── GraphToolbar.tsx       # Node/edge type filters + search
-│       ├── WalkBreadcrumb.tsx     # Clickable exploration trail
-│       └── GraphLegend.tsx        # SVG colour key
+│   ├── graph/                    # Project 4 components
+│   │   ├── GraphCanvas.tsx        # D3 force simulation — full SVG rendering
+│   │   ├── EntityPanel.tsx        # Node details + path finder UI
+│   │   ├── GraphToolbar.tsx       # Node/edge type filters + search
+│   │   ├── WalkBreadcrumb.tsx     # Clickable exploration trail
+│   │   └── GraphLegend.tsx        # SVG colour key
+│   └── showcase/                 # Project 5 components
+│       ├── CaseStudyCard.tsx      # Grid card — gradient cover, badges, metrics, tech tags
+│       ├── CaseStudyFilters.tsx   # Search input + industry/service chip filters
+│       ├── CaseStudyGrid.tsx      # Client component — owns filter state via hook
+│       ├── MetricPill.tsx         # KPI display — sentiment colour, value, delta, label
+│       ├── TechTag.tsx            # Monospace technology pill
+│       ├── CategoryBadges.tsx     # IndustryBadge + ServiceBadge with exhaustive colour maps
+│       ├── ShowcaseSkeleton.tsx   # Grid + detail loading skeletons
+│       └── JsonLd.tsx             # Type-safe JSON-LD <script> injector
 ├── hooks/
-│   ├── useDebounce.ts             # Generic debounce hook (Project 1)
+│   ├── useDebounce.ts             # Generic debounce hook (Projects 1 & 5)
 │   ├── useGitHubProfile.ts        # GitHub data hook (Project 1)
 │   ├── useBoard.ts                # Kanban state machine (Project 3)
-│   └── useGraph.ts                # Graph selection, walk trail, BFS, filters (Project 4)
+│   ├── useGraph.ts                # Graph selection, walk trail, BFS, filters (Project 4)
+│   └── useShowcaseFilters.ts      # Multi-dimensional filter reducer + memoised results (Project 5)
 ├── lib/
 │   ├── apollo-client.ts           # HTTP + WS split-link Apollo factory
 │   ├── github/                   # Project 1 — types & GraphQL queries
 │   ├── blog/                     # Project 2 — types, queries, CMS client
 │   ├── board/                    # Project 3 — types, queries, mock data
-│   └── graph/                    # Project 4 — types, mock data, graph utilities
-│       ├── types.ts               # GraphNode, GraphEdge, WalkStep, SimEdge…
-│       ├── mock-data.ts           # 24 nodes, 58 edges — 2024 trade data
-│       └── graph-utils.ts         # BFS path finder, adjacency map, filter engine
+│   ├── graph/                    # Project 4 — types, mock data, graph utilities
+│   │   ├── types.ts               # GraphNode, GraphEdge, WalkStep, SimEdge…
+│   │   ├── mock-data.ts           # 24 nodes, 58 edges — 2024 trade data
+│   │   └── graph-utils.ts         # BFS path finder, adjacency map, filter engine
+│   └── showcase/                 # Project 5 — types, queries, CMS client, mock data
+│       ├── types.ts               # CaseStudy, CaseStudySummary, Industry, ServiceType…
+│       ├── queries.ts             # Contentful GraphQL queries (list, detail, slugs)
+│       ├── client.ts              # ISR fetch client — falls back to mock data
+│       └── mock-data.ts           # 5 fully-authored case studies across 5 industries
 └── __tests__/                    # Unit tests (Jest + RTL)
     ├── apollo-client.test.ts
     ├── ApolloWrapper.test.tsx
     ├── page.test.tsx
     ├── RepositoryCard.test.tsx
     ├── useDebounce.test.ts
-    └── board/
-        ├── useBoard.test.ts       # Pure reducer — 8 action types
-        └── TaskCard.test.tsx      # Render + interaction tests
+    ├── board/
+    │   ├── useBoard.test.ts       # Pure reducer — 8 action types
+    │   └── TaskCard.test.tsx      # Render + interaction tests
+    └── showcase/
+        ├── useShowcaseFilters.test.ts  # Pure reducer + hook integration — 30 tests
+        ├── CaseStudyCard.test.tsx      # Render tests — fields, badges, metrics, nav, a11y
+        └── MetricPill.test.tsx         # Content, aria-label, sentiment classes, size variant
 ```
 
 ---
@@ -196,3 +241,7 @@ src/
 **Pure reducer state.** The Kanban board's `boardReducer` is a plain function — no React, no side-effects. Every state transition is tested directly by passing `(state, action)` pairs, giving complete branch coverage without mounting any components.
 
 **D3 + React co-existence.** The knowledge graph runs D3's force simulation entirely outside React's render cycle. The first `useEffect` builds the simulation and the full SVG DOM when the dataset changes. A second, lighter `useEffect` updates only visual properties (opacity, stroke colour, ring visibility) when selection or path state changes — without ever restarting the physics engine. This pattern avoids the common pitfall of tearing down and rebuilding a simulation on every render.
+
+**Headless CMS + ISR architecture.** The showcase uses Next.js `fetch` with `next: { revalidate }` to drive ISR natively from server components — no Apollo Client needed on the server side. When `CONTENTFUL_SPACE_ID` is unset the `client.ts` layer transparently returns mock data, so the full UI is evaluable without any external accounts. `generateStaticParams` pre-renders every detail page at build time; `generateMetadata` produces accurate, content-specific SEO tags per study from the same CMS fetch.
+
+**Composable filter state with `useReducer`.** The showcase filter hook (`useShowcaseFilters`) manages industry, service, and search as a single atomic state object via `useReducer`. The discriminated-union action type with a `default: never` exhaustiveness check means adding a new filter dimension without a corresponding case is a compile-time error. Derived state (`visibleStudies`, `activeFilterCount`) is wrapped in `useMemo` so it recomputes only when filter state or the dataset reference changes — not on every parent re-render.

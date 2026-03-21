@@ -55,6 +55,17 @@ const PROJECTS = [
     tech: ["D3.js v7", "Force Simulation", "BFS Path Finder", "TypeScript"],
     pills: [],
   },
+  {
+    number: "05",
+    status: "live" as const,
+    title: "Client Showcase",
+    description:
+      "A multi-dimensional case-study portfolio backed by Contentful CMS with ISR revalidation, multi-filter state management via useReducer, full-text search with debouncing, JSON-LD structured data for SEO, and streaming loading skeletons — the architecture an experience-design consultancy actually uses.",
+    href: "/showcase",
+    cta: "View case studies →",
+    tech: ["Next.js ISR", "Contentful CMS", "useReducer", "JSON-LD SEO"],
+    pills: [],
+  },
 ] as const;
 
 const STATUS_BADGE = {
