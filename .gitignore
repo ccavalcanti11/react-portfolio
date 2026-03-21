@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+INTERVIEW_PREP.md
 
 # debug
 npm-debug.log*
